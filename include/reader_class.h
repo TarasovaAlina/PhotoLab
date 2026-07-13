@@ -81,17 +81,17 @@ public:
 private:
 
     /**
-     * @brief проверка на корректность скачивания/создания файла .bmp 
-     * @return флаг успешного считывания/открытия файла 
-     */
-    bool validate() const noexcept;
-
-    /**
      * @brief расчет длины строки с учетом padding
      * @param pixelsNum текущая ширина
      * @return ширина с учетом padding
      */
     uint32_t calculateBytesPerRowWithPadding(uint32_t pixelsNum) const noexcept;
+
+    /**
+     * @brief перевод 24-bit формата в 32-bit при необходимости
+     * @param file файловый поток
+     */
+    void setBitFormat(std::ifstream& file) noexcept(false);
 
 #pragma pack(push, 2)
     struct BmpHeader {
@@ -116,11 +116,11 @@ private:
         uint32_t colorImportans{};
     } m_infoHeader; ///< заголовок BITMAPINFO
 
-    std::vector<Rgba> m_data; ///<  вектор полученных данных в формате RGBA; будет корректироваться с учетом других форматов
+    std::vector<uint8_t> file_data; ///< вектор полученных 24-bit bmp данных для перевода в RGBA
+    std::vector<Rgba> m_data; ///<  вектор полученных данных в формате RGBA
 
     inline static const uint16_t bmpSignature{0x4D42}; ///< BM в 16й системе
-    inline static const uint32_t defaultPixelsPerMeter{3780}; ///< рандомное значение
-    inline static const uint32_t padding{0}; ///< padding для 32-битового .bmp; будет корректироваться с учетом других форматов
+    inline static const uint32_t defaultPixelsPerMeter{3780}; ///< рандомное значение 
 };
 
 template<typename Pixel>
@@ -157,18 +157,13 @@ bool Bmp<Pixel>::loadFile(const std::string& filename) noexcept(false) {
         }
 
         const auto imageSize = calculateBytesPerRowWithPadding(m_infoHeader.width) * m_infoHeader.height;
-
         m_infoHeader.imageSize = imageSize;
-        m_data.resize(imageSize);
 
-        if (!file.read(reinterpret_cast<char*>(m_data.data()), m_infoHeader.imageSize)) {
-            throw std::runtime_error{ "Failed to read file" };
-        }
+        m_data.resize(m_infoHeader.imageSize);
 
-
+        setBitFormat(file);
 
         file.close();
-        // return validate();
         return true;
     }
     return false;
@@ -177,6 +172,17 @@ bool Bmp<Pixel>::loadFile(const std::string& filename) noexcept(false) {
 template<typename Pixel>
 bool Bmp<Pixel>::saveFile(const std::string& filename) noexcept(false) {
 
+    m_infoHeader.bitsPerPixel = 32;
+
+    m_infoHeader.imageSize =
+        m_infoHeader.width *
+        m_infoHeader.height *
+        sizeof(Rgba);
+
+    m_header.fileSize =
+        m_header.dataOffset +
+        m_infoHeader.imageSize;
+    
     std::cout
     << sizeof(BmpHeader) << '\n'
     << sizeof(InfoHeader) << '\n'
@@ -188,8 +194,6 @@ bool Bmp<Pixel>::saveFile(const std::string& filename) noexcept(false) {
     std::cout << "width = " << m_infoHeader.width << '\n';
     std::cout << "height = " << m_infoHeader.height << '\n';
     std::cout << "bits = " << m_infoHeader.bitsPerPixel << '\n';
-
-    m_infoHeader.bitsPerPixel = 32;
 
     std::ofstream file{ filename, std::ios::binary };
     if (file) {
@@ -233,15 +237,7 @@ Bmp<Pixel>::PixelType& Bmp<Pixel>::operator()(uint32_t row, uint32_t column) noe
     if (row >= m_infoHeader.height || column >= m_infoHeader.width) {
         throw std::out_of_range{ "Out of range" };
     }
-    const auto reversedRow{ m_infoHeader.height - row - 1 };
-    return m_data[reversedRow * m_infoHeader.width + column]; 
-}
-
-template<typename Pixel>
-bool Bmp<Pixel>::validate() const noexcept {
-    return (m_header.signature == bmpSignature
-        && m_infoHeader.planes == 1
-        && m_infoHeader.compression == 0);
+    return m_data[row * m_infoHeader.width + column];
 }
 
 template<typename Pixel>
@@ -249,4 +245,26 @@ uint32_t Bmp<Pixel>::calculateBytesPerRowWithPadding(uint32_t pixelsNum) const n
     const auto bytesNum{ pixelsNum * m_infoHeader.bitsPerPixel / CHAR_BIT };
     const auto nearestDivisibleByPadding{((bytesNum + 3) / 4) * 4};
     return nearestDivisibleByPadding;
+}
+
+template<typename Pixel>
+void Bmp<Pixel>::setBitFormat(std::ifstream& file) noexcept(false) {
+    if (m_infoHeader.bitsPerPixel == 24) {
+        file_data.resize(m_infoHeader.imageSize);
+        if (!file.read(reinterpret_cast<char*>(file_data.data()), m_infoHeader.imageSize)) {
+            throw std::runtime_error{ "Failed to read file" };
+        }
+        int j{};
+        for (int i{}; i < file_data.size() - 3; i += 3) {
+            m_data[j].blue = file_data[i];
+            m_data[j].green = file_data[i + 1];
+            m_data[j].red = file_data[i + 2];
+            j++;
+        }
+        
+    } else {
+        if (!file.read(reinterpret_cast<char*>(m_data.data()), m_infoHeader.imageSize)) {
+            throw std::runtime_error{ "Failed to read file" };
+        }
+    }
 }
