@@ -1,4 +1,8 @@
-#pragma once
+#ifndef READERCLASS_H
+#define READERCLASS_H
+
+#include "CNN/struct.h"
+#include "CNN/CNN_kernel.h"
 
 #include <vector>
 #include <iostream>
@@ -12,18 +16,6 @@
  * @brief В этом файле находится шаблонный класс для считывания и загрузки файлов в формате bpm (сейчас поддерживается 32-битная версия)
  * @author Tarasova Alina
  */
-
-/**
- * @struct Rgba
- * @brief Содержит цвета в формате RGB и параметр прозрачности alpha
- */
-
-struct Rgba {
-    uint8_t blue;
-    uint8_t green;
-    uint8_t red;
-    uint8_t alpha{255};
-};
 
 /**
  * @class Bmp
@@ -65,6 +57,8 @@ public:
      */
     uint32_t getHeight() const noexcept;
 
+    void setData(const std::vector<Rgba>& data) noexcept;
+
     /**
      * @brief Метод для очищения (зануления) вектора пикселей
      */
@@ -77,6 +71,8 @@ public:
      * @return пиксель
      */
     PixelType& operator()(uint32_t row, uint32_t column) noexcept(false);
+
+    const std::vector<Rgba>& data() const noexcept;
 
 private:
 
@@ -224,6 +220,11 @@ uint32_t Bmp<Pixel>::getHeight() const noexcept {
 }
 
 template<typename Pixel>
+void Bmp<Pixel>::setData(const std::vector<Rgba>& data) noexcept {
+    m_data = data;
+}
+
+template<typename Pixel>
 void Bmp<Pixel>::clear() noexcept {
     for (uint32_t i{}; i < m_infoHeader.height; ++i) {
         for (uint32_t j{}; j < m_infoHeader.width; ++j) {
@@ -238,6 +239,11 @@ Bmp<Pixel>::PixelType& Bmp<Pixel>::operator()(uint32_t row, uint32_t column) noe
         throw std::out_of_range{ "Out of range" };
     }
     return m_data[row * m_infoHeader.width + column];
+}
+
+template<typename Pixel>
+const std::vector<Rgba>& Bmp<Pixel>::data() const noexcept {
+    return m_data;
 }
 
 template<typename Pixel>
@@ -268,3 +274,5 @@ void Bmp<Pixel>::setBitFormat(std::ifstream& file) noexcept(false) {
         }
     }
 }
+
+#endif

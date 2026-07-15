@@ -34,9 +34,9 @@ void keepGreenChannel(Bmp<Rgba>& bmp) noexcept {
     for (uint32_t i{}, height{bmp.getHeight()}; i < height; ++i) {
         for (uint32_t j{}, width{ bmp.getWidth() }; j < width; ++j) {
             auto& pixel{ bmp(i, j) };
-            pixel.red = 0;
-            pixel.green = 0;
-            // pixel.blue = ;
+            // pixel.red = 0;
+            // pixel.green = 0;
+            pixel.blue = 0;
         }
     }
 }

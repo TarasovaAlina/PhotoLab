@@ -15,10 +15,14 @@ int main(int argc, char* argv[]) {
         std::string outputBmpFile { argv[2] };
 
         Bmp bmp { inputBmpFile };
+        CNN cnn {};
+        cnn.proccesingImage(bmp.data(), bmp.getHeight(), bmp.getWidth());
+        bmp.setData(cnn.getOutputData());
+
 
         // makeBW(bmp);
         // keepGreenChannel(bmp);
-        makeNegative(bmp);
+        // makeNegative(bmp);
 
         if (!bmp.saveFile(outputBmpFile)) {
             std::cout << "Fail to save file" << std::endl;
