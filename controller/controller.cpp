@@ -52,6 +52,12 @@ void Controller::processImage() {
     processed_.setData(cnn_.getOutputData());
 }
 
+void Controller::processImage(bool filter) {
+    cnn_.proccesingImage(processed_.data(), processed_.getHeight(), processed_.getWidth(), PrewittFilter);
+
+    processed_.setData(cnn_.getOutputData());
+}
+
 void Controller::clearImage() {
     processed_.setData(original_.data());
 }

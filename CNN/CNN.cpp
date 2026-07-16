@@ -1,4 +1,5 @@
 #include "CNN/CNN_kernel.h"
+#include <cmath>
 
 CNN::CNN() noexcept : kernel_{} {}
 
@@ -69,6 +70,61 @@ void CNN::proccesingImage(const std::vector<Rgba>& data_, int height, int width)
     }
 }
 
+void CNN::proccesingImage(const std::vector<Rgba>& data_, int height, int width, CONVOLUTION_FILTER filter) noexcept {
+
+    if (filter != PrewittFilter)    
+        return;
+
+    int n_h{height}, n_w{width};
+    std::vector<Rgba> temp_1;
+    std::vector<Rgba> temp_2;
+
+    temp_1.resize(data_.size());
+    temp_2.resize(data_.size());
+    output_data_.resize(data_.size());
+
+    for (auto& pixel : temp_1) {
+        pixel = Rgba{0, 0, 0, 255};
+    }
+
+    for (auto& pixel : temp_2) {
+        pixel = Rgba{0, 0, 0, 255};
+    }
+
+    for (auto& pixel : output_data_) {
+        pixel = Rgba{0, 0, 0, 255};
+    }
+
+    setPrewittFilterX();
+
+    for (int i{0}; i < n_h - kernel_.p_h + 1; ++i) {
+        for (int j{0}; j < n_w - kernel_.p_w + 1; ++j) {
+            proccesingParticularSpace(data_, temp_1, i, j, n_w);
+        }
+    }
+
+    setPrewittFilterY();
+
+    for (int i{0}; i < n_h - kernel_.p_h + 1; ++i) {
+        for (int j{0}; j < n_w - kernel_.p_w + 1; ++j) {
+            proccesingParticularSpace(data_, temp_2, i, j, n_w);
+        }
+    }
+
+    for (int i = 0; i < output_data_.size(); ++i) {
+        output_data_[i].red =
+            std::abs(temp_1[i].red) +
+            std::abs(temp_1[i].red);
+        output_data_[i].green =
+            std::abs(temp_1[i].green) +
+            std::abs(temp_1[i].green);
+        output_data_[i].blue =
+            std::abs(temp_1[i].blue) +
+            std::abs(temp_1[i].blue);
+    }
+
+}
+
 void CNN::proccesingParticularSpace(const std::vector<Rgba>& data_, int h, int w, int width) noexcept{
 
     int new_height = h + kernel_.p_h / 2;
@@ -81,8 +137,24 @@ void CNN::proccesingParticularSpace(const std::vector<Rgba>& data_, int h, int w
             rgba += data_[(h + i) * width + (w + j)] * kernel_.kernel_data_[i * kernel_.k_size + j];
         }
     }
+    
 
     output_data_[new_height * width + new_width] = rgba;
+}
+
+void CNN::proccesingParticularSpace(const std::vector<Rgba>& data_, std::vector<Rgba>& output, int h, int w, int width) noexcept {
+
+    int new_height = h + kernel_.p_h / 2;
+    int new_width = w + kernel_.p_w / 2;
+
+    temp_Rgba rgba{};
+
+    for (int i{}; i < kernel_.k_size; ++i) {
+        for (int j{}; j < kernel_.k_size; ++j) {
+            rgba += data_[(h + i) * width + (w + j)] * kernel_.kernel_data_[i * kernel_.k_size + j];
+        }
+    }
+    output[new_height * width + new_width] = rgba;
 }
 
 const std::vector<Rgba>& CNN::getOutputData() const noexcept {
@@ -122,4 +194,12 @@ void CNN::setLaplacianFilter()  noexcept {
         data = 1.f;
     }
     kernel_.kernel_data_[4] = -8.f;
+}
+
+void CNN::setPrewittFilterX() noexcept {
+    kernel_.kernel_data_ = { -1.f, -1.f, -1.f, 0.f, 0.f, 0.f, 1.f, 1.f, 1.f  };
+}
+
+void CNN::setPrewittFilterY() noexcept {
+    kernel_.kernel_data_ = { -1.f, 0.f, 1.f, -1.f, 0.f, 1.f, -1.f, 0.f, 1.f };
 }

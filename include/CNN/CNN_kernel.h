@@ -25,7 +25,6 @@ enum CONVOLUTION_FILTER {
     GaussianBlur, ///< Гауссово размытие
     LaplacianFilter, ///< Фильтр Лапласа
     PrewittFilter, ///< Фильтр Прюитта
-    SobelFilter ///< Фильтр Собеля
 };
 
 /**
@@ -92,6 +91,15 @@ public:
     void proccesingImage(const std::vector<Rgba>& data_, int length, int width) noexcept;
 
     /**
+     * @brief обработка изображения с применением выбранного фильтра
+     * @param data_ вектор пикселей
+     * @param length длина входного изображения
+     * @param width ширина входного изображения
+     * @param filter выбранный фильтер (перегрузка для фильтра Прюитта)
+     */
+    void proccesingImage(const std::vector<Rgba>& data_, int length, int width,  CONVOLUTION_FILTER filter) noexcept;
+
+    /**
      * @brief установка фильтра Барельефа
      */
     void setEmbossFilter() noexcept;
@@ -115,6 +123,16 @@ public:
      * @brief установка фильтра Лапласа
      */
     void setLaplacianFilter() noexcept;
+
+    /**
+     * @brief установка фильтра Прюитта по горизонтали
+     */
+    void setPrewittFilterX() noexcept;
+
+    /**
+     * @brief установка фильтра Прюитта по вертикали
+     */
+    void setPrewittFilterY() noexcept;
 
     /**
      * @brief геттер для выходных данных (выходного изображения после обработки фильтром)
@@ -149,6 +167,17 @@ private:
      * @param width ширина входного изображения
      */
     void proccesingParticularSpace(const std::vector<Rgba>& data_, int h, int w, int width) noexcept;
+
+    /**
+     * @brief обработка отдельного участка изображения 
+     * с применением выбранного фильтра
+     * @param data_ имя файла
+     * @param output выходной массив
+     * @param h индекс по высоте
+     * @param w индекс по ширине
+     * @param width ширина входного изображения
+     */
+    void proccesingParticularSpace(const std::vector<Rgba>& data_, std::vector<Rgba>& output, int h, int w, int width) noexcept;
 };
 
 #endif

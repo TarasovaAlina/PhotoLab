@@ -30,7 +30,8 @@ MainWindow::MainWindow(QWidget *parent)
     convGroup_->addButton(ui->radioBoxBlur, 3);
     convGroup_->addButton(ui->radioGaussian, 4);
     convGroup_->addButton(ui->radioLaplacian, 5);
-    convGroup_->addButton(ui->radioCustomKernel, 6);
+    convGroup_->addButton(ui->radioPrewitt, 6);
+    convGroup_->addButton(ui->radioCustomKernel, 7);
 
     resize(600, 800);
 
@@ -307,6 +308,10 @@ void MainWindow::applyFilter()
         break;
 
     case 6:
+        controller_.processImage(true);
+        break;
+
+    case 7:
         controller_.setKernel(readKernel());
         controller_.processImage();
         break;

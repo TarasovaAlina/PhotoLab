@@ -203,10 +203,19 @@
            </property>
           </widget>
          </item>
-                  <item>
+
+         <item>
           <widget class="QRadioButton" name="radioLaplacian">
            <property name="text">
             <string>Laplacian</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QRadioButton" name="radioPrewitt">
+           <property name="text">
+            <string>Prewitt</string>
            </property>
           </widget>
          </item>
