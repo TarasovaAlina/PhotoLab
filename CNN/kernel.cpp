@@ -1,4 +1,4 @@
-#include "../include/CNN/CNN_kernel.h"
+#include "CNN/CNN_kernel.h"
 
 Kernel::Kernel() noexcept : 
     k_size{STANDART_KERNEL_SIZE}, 

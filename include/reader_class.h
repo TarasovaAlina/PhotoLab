@@ -5,7 +5,6 @@
 #include "CNN/CNN_kernel.h"
 
 #include <vector>
-#include <iostream>
 #include <climits>
 #include <cstdint>
 #include <stdexcept>
@@ -72,7 +71,24 @@ public:
      */
     PixelType& operator()(uint32_t row, uint32_t column) noexcept(false);
 
+    /**
+     * @brief оператор для получения пикселя (константная ссылка)
+     * @param row строка изображения
+     * @param column колонка изображения
+     * @return константный пиксель
+     */
+    PixelType const& operator()(uint32_t row, uint32_t col) const noexcept(false); 
+
+    /**
+     * @brief Геттер для получения вектора пикселей в формате RGBA
+     * @return Вектор пикселей в формате RGBA
+     */
     const std::vector<Rgba>& data() const noexcept;
+
+    /**
+     * @brief Метод для разворота строк пикселей по высоте
+     */
+    void reverseData() noexcept;
 
 private:
 
@@ -121,16 +137,16 @@ private:
 
 template<typename Pixel>
 Bmp<Pixel>::Bmp(uint32_t width, uint32_t height) noexcept(false) {
-    const auto bytesPerRow{ (width * Pixel::bitsPerPixel) / CHAR_BIT };
-    const auto bytesPerRowWithPadding{ calculateBytesPerRowWithPadding(width) };
-    const auto dataOffset{ sizeof(BmpHeader) + sizeof(InfoHeader) };
-    const auto imageSize{ bytesPerRowWithPadding * height };
-    m_header.fileSize = dataOffset + imageSize;
-    m_header.dataOffset = dataOffset;
+    // const auto bytesPerRow{ (width * Pixel::bitsPerPixel) / CHAR_BIT };
+    // const auto bytesPerRowWithPadding{ calculateBytesPerRowWithPadding(width) };
+    // const auto dataOffset{ sizeof(BmpHeader) + sizeof(InfoHeader) };
+    // const auto imageSize{ bytesPerRowWithPadding * height };
+    // m_header.fileSize = dataOffset + imageSize;
+    // m_header.dataOffset = dataOffset;
     m_infoHeader.width = width;
     m_infoHeader.height = height;
-    m_infoHeader.imageSize = imageSize;
-    m_data.resize(imageSize, 0);
+    // m_infoHeader.imageSize = imageSize;
+    // m_data.resize(imageSize, 0);
     clear();
 }
 
@@ -178,18 +194,6 @@ bool Bmp<Pixel>::saveFile(const std::string& filename) noexcept(false) {
     m_header.fileSize =
         m_header.dataOffset +
         m_infoHeader.imageSize;
-    
-    std::cout
-    << sizeof(BmpHeader) << '\n'
-    << sizeof(InfoHeader) << '\n'
-    << m_header.dataOffset << '\n'
-    << m_header.fileSize << '\n'
-    << m_infoHeader.imageSize << '\n'
-    << m_data.size() << '\n';
-
-    std::cout << "width = " << m_infoHeader.width << '\n';
-    std::cout << "height = " << m_infoHeader.height << '\n';
-    std::cout << "bits = " << m_infoHeader.bitsPerPixel << '\n';
 
     std::ofstream file{ filename, std::ios::binary };
     if (file) {
@@ -199,6 +203,8 @@ bool Bmp<Pixel>::saveFile(const std::string& filename) noexcept(false) {
         if (!file.write(reinterpret_cast<char*>(&m_infoHeader), sizeof(InfoHeader))) {
             throw std::runtime_error{ "Failed to read file" };
         }
+
+        reverseData();
 
         if (!file.write(reinterpret_cast<char*>(m_data.data()), m_infoHeader.imageSize)) {
             throw std::runtime_error{ "Failed to read file" };
@@ -242,6 +248,14 @@ Bmp<Pixel>::PixelType& Bmp<Pixel>::operator()(uint32_t row, uint32_t column) noe
 }
 
 template<typename Pixel>
+Bmp<Pixel>::PixelType const& Bmp<Pixel>::operator()(uint32_t row, uint32_t column) const noexcept(false) {
+    if (row >= m_infoHeader.height || column >= m_infoHeader.width) {
+        throw std::out_of_range{ "Out of range" };
+    }
+    return m_data[row * m_infoHeader.width + column];
+}
+
+template<typename Pixel>
 const std::vector<Rgba>& Bmp<Pixel>::data() const noexcept {
     return m_data;
 }
@@ -255,6 +269,7 @@ uint32_t Bmp<Pixel>::calculateBytesPerRowWithPadding(uint32_t pixelsNum) const n
 
 template<typename Pixel>
 void Bmp<Pixel>::setBitFormat(std::ifstream& file) noexcept(false) {
+
     if (m_infoHeader.bitsPerPixel == 24) {
         file_data.resize(m_infoHeader.imageSize);
         if (!file.read(reinterpret_cast<char*>(file_data.data()), m_infoHeader.imageSize)) {
@@ -272,6 +287,19 @@ void Bmp<Pixel>::setBitFormat(std::ifstream& file) noexcept(false) {
         if (!file.read(reinterpret_cast<char*>(m_data.data()), m_infoHeader.imageSize)) {
             throw std::runtime_error{ "Failed to read file" };
         }
+    }
+    reverseData();
+}
+
+template<typename Pixel>
+void Bmp<Pixel>::reverseData() noexcept {
+    for (uint32_t row = 0; row < m_infoHeader.height / 2; ++row) {
+        auto first = m_data.begin() + row * m_infoHeader.width;
+        auto second = m_data.begin() + (m_infoHeader.height - row - 1) * m_infoHeader.width;
+
+        std::swap_ranges(first,
+                        first + m_infoHeader.width,
+                        second);
     }
 }
 

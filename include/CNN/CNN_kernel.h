@@ -8,19 +8,17 @@
 
 /**
  * @file CNN_kernel.h
- * @brief В этом файле находится классы сверточного слоя (CNN) и ядра фильтра (kernel filter)
+ * @brief В этом файле находятся классы сверточного слоя (CNN) и ядра фильтра (kernel filter)
  * @author Tarasova Alina
  */
 
-#define MAX_KERNEL_SIZE 16
 #define STANDART_KERNEL_SIZE 3
-#define STRIDE 1
 
 /**
  * @enum CONVOLUTION_FILTER
- * @brief Перечисленные фильтров для обработки изображения
+ * @brief Фильтры для обработки изображения
  */
-typedef enum CONVOLUTION_FILTER {
+enum CONVOLUTION_FILTER {
     Emboss, ///< Барельеф 
     Sharpen, ///< Повышение резкости
     BoxBlur, ///< Блочное размытие
@@ -60,9 +58,34 @@ public:
     explicit CNN() noexcept;
     explicit CNN(int size, std::vector<float> kernel_data) noexcept;
 
+    
+    /**
+     * @brief функция, создающая ЧБ изображение
+     * @param data_ вектор пикселей
+     * @param length длина входного изображения
+     * @param width ширина входного изображения
+     */
+    void makeBW(const std::vector<Rgba>& data_, int height, int width) noexcept;
+
+    /**
+     * @brief функция, создающая изображение с одним выбранным цветным каналом
+     * @param data_ вектор пикселей
+     * @param length длина входного изображения
+     * @param width ширина входного изображения
+     */
+    void keepCertainChannel(const std::vector<Rgba>& data_, int height, int width, const Rgba& color) noexcept;
+
+    /**
+     * @brief функция, создающая негативное изображение
+     * @param data_ вектор пикселей
+     * @param length длина входного изображения
+     * @param width ширина входного изображения
+     */
+    void makeNegative(const std::vector<Rgba>& data_, int height, int width) noexcept;
+
     /**
      * @brief обработка изображения с применением выбранного фильтра
-     * @param data_ имя файла
+     * @param data_ вектор пикселей
      * @param length длина входного изображения
      * @param width ширина входного изображения
      */
@@ -91,13 +114,25 @@ public:
     /**
      * @brief установка фильтра Лапласа
      */
-    void LaplacianFilter() noexcept;
+    void setLaplacianFilter() noexcept;
 
     /**
      * @brief геттер для выходных данных (выходного изображения после обработки фильтром)
      * @return вектор выходных значений в формате Rgba
      */
     const std::vector<Rgba>& getOutputData() const noexcept;
+
+    /**
+     * @brief установка нового размера ядра с пересчетом отступов
+     * @param size размер ядра
+     */
+    void setKernelSize(int size) noexcept;
+
+    /**
+     * @brief установка вектора данных ядра фильтра
+     * @param kernel данные фильтра
+     */
+    void setKernel(const std::vector<float>& kernel) noexcept;
 
 private:
 

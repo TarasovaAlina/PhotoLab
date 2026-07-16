@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+
+ <widget class="QMainWindow" name="MainWindow">
+
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1400</width>
+    <height>850</height>
+   </rect>
+  </property>
+
+  <property name="windowTitle">
+   <string>PhotoLab</string>
+  </property>
+
+  <widget class="QWidget" name="centralwidget">
+
+   <layout class="QHBoxLayout" name="horizontalLayout">
+
+    <!-- ================= LEFT ================= -->
+
+    <item>
+
+     <layout class="QVBoxLayout" name="imagesLayout">
+
+      <item>
+       <widget class="QLabel" name="labelOriginal">
+        <property name="text">
+         <string>Original image</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QGraphicsView" name="graphicsViewOriginal"/>
+      </item>
+
+      <item>
+       <widget class="QLabel" name="labelProcessed">
+        <property name="text">
+         <string>Processed image</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QGraphicsView" name="graphicsViewProcessed"/>
+      </item>
+
+     </layout>
+
+    </item>
+
+    <!-- ================= RIGHT ================= -->
+
+    <item>
+
+     <layout class="QVBoxLayout" name="controlLayout">
+
+      <item>
+
+       <widget class="QGroupBox" name="groupBasic">
+
+        <property name="title">
+         <string>Basic Filters</string>
+        </property>
+
+        <layout class="QVBoxLayout">
+
+         <item>
+          <widget class="QRadioButton" name="radioOriginal">
+           <property name="text">
+            <string>Original</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QRadioButton" name="radioBW">
+           <property name="text">
+            <string>Black &amp; White</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QRadioButton" name="radioNegative">
+           <property name="text">
+            <string>Negative</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QRadioButton" name="radioKeepColor">
+           <property name="text">
+            <string>Tint</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+
+          <layout class="QHBoxLayout">
+
+           <item>
+
+            <widget class="QPushButton" name="pushButtonColor">
+
+             <property name="text">
+              <string>Choose color</string>
+             </property>
+
+            </widget>
+
+           </item>
+
+           <item>
+
+            <widget class="QFrame" name="frameColor">
+
+             <property name="minimumSize">
+              <size>
+               <width>40</width>
+               <height>25</height>
+              </size>
+             </property>
+
+             <property name="frameShape">
+              <enum>QFrame::Box</enum>
+             </property>
+
+            </widget>
+
+           </item>
+
+          </layout>
+
+         </item>
+
+        </layout>
+
+       </widget>
+
+      </item>
+
+      <item>
+
+       <widget class="QGroupBox" name="groupConvolution">
+
+        <property name="title">
+         <string>Convolution Filters</string>
+         </property>
+
+        <layout class="QVBoxLayout">
+
+         <item>
+          <widget class="QRadioButton" name="radioConvNone">
+           <property name="text">
+            <string>None</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QRadioButton" name="radioEmboss">
+           <property name="text">
+            <string>Emboss</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QRadioButton" name="radioSharpen">
+           <property name="text">
+            <string>Sharpen</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QRadioButton" name="radioBoxBlur">
+           <property name="text">
+            <string>Box Blur</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QRadioButton" name="radioGaussian">
+           <property name="text">
+            <string>Gaussian Blur</string>
+           </property>
+          </widget>
+         </item>
+                  <item>
+          <widget class="QRadioButton" name="radioLaplacian">
+           <property name="text">
+            <string>Laplacian</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QRadioButton" name="radioCustomKernel">
+           <property name="text">
+            <string>Custom Kernel</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <layout class="QHBoxLayout">
+
+           <item>
+            <widget class="QLabel" name="labelKernelSize">
+             <property name="text">
+              <string>Kernel size</string>
+             </property>
+            </widget>
+           </item>
+
+           <item>
+            <widget class="QSpinBox" name="spinBoxKernel"/>
+           </item>
+
+          </layout>
+         </item>
+
+         <item>
+          <widget class="QTableWidget" name="tableWidgetKernel">
+           <property name="minimumSize">
+            <size>
+             <width>220</width>
+             <height>220</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+
+        </layout>
+
+       </widget>
+
+      </item>
+
+      <item>
+
+       <widget class="QPushButton" name="pushButtonApply">
+
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>40</height>
+         </size>
+        </property>
+
+        <property name="text">
+         <string>Apply</string>
+        </property>
+
+       </widget>
+
+      </item>
+
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+
+     </layout>
+
+    </item>
+
+   </layout>
+
+  </widget>
+
+  <widget class="QMenuBar" name="menubar">
+
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1400</width>
+     <height>22</height>
+    </rect>
+   </property>
+
+   <widget class="QMenu" name="menuFile">
+
+    <property name="title">
+     <string>File</string>
+    </property>
+
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+
+   </widget>
+
+   <addaction name="menuFile"/>
+
+  </widget>
+
+  <widget class="QStatusBar" name="statusbar"/>
+
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+
+ </widget>
+
+ <resources/>
+
+ <connections/>
+
+</ui>
