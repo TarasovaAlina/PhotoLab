@@ -280,45 +280,9 @@ void MainWindow::applyFilter()
         break;
     }
 
-    switch (convGroup_->checkedId())
-    {
-    case 1:
-        controller_.setFilter(Emboss);
-        controller_.processImage();
-        break;
+    if (convGroup_->checkedId())
+        controller_.setFilter(convGroup_->checkedId());
 
-    case 2:
-        controller_.setFilter(Sharpen);
-        controller_.processImage();
-        break;
-
-    case 3:
-        controller_.setFilter(BoxBlur);
-        controller_.processImage();
-        break;
-
-    case 4:
-        controller_.setFilter(GaussianBlur);
-        controller_.processImage();
-        break;
-
-    case 5:
-        controller_.setFilter(LaplacianFilter);
-        controller_.processImage();
-        break;
-
-    case 6:
-        controller_.processImage(true);
-        break;
-
-    case 7:
-        controller_.setKernel(readKernel());
-        controller_.processImage();
-        break;
-
-    default:
-        break;
-    }
-
+    controller_.processImage();
     updateProcessedImage();
 }

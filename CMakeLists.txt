@@ -11,7 +11,7 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Charts)
 
 # Файлы проекта
-file(GLOB TOOLS_SRC tools/*.cpp)
+file(GLOB TOOLS_SRC Filters/*.cpp)
 file(GLOB CNN_SRC CNN/*.cpp)
 file(GLOB CONTROLLER_SRC controller/*.cpp)
 file(GLOB GUI_SRC gui/*.cpp)

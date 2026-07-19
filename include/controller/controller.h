@@ -9,6 +9,7 @@
 
 #include "reader_class.h"
 #include "CNN/CNN_kernel.h"
+#include "Filters/filters.h"
 
 #include <iostream>
 
@@ -35,7 +36,7 @@ public:
      * @brief Устанавливает фильтр свёртки.
      * @param filter тип фильтра.
      */
-    void setFilter(CONVOLUTION_FILTER filter) noexcept;
+    void setFilter(int filter) noexcept;
 
     /**
      * @brief Устанавливает размер ядра свёртки.
@@ -53,11 +54,6 @@ public:
      * @brief Применяет выбранный фильтр свёртки к изображению.
      */
     void processImage();
-
-    /**
-     * @brief Применяет выбранный фильтр свёртки к изображению (перегрузка для фильтра Прюитта).
-     */
-    void processImage(bool filter);
 
     /**
      * @brief Восстанавливает обработанное изображение до исходного состояния.
@@ -115,6 +111,7 @@ private:
     Bmp<Rgba> processed_; ///< Обработанное изображение.
 
     CNN cnn_; ///< Объект обработки изображения.
+    Filter filter_; ///< Объект обработки без слоя.
 };
 
 #endif

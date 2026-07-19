@@ -1,7 +1,7 @@
 #include "controller/controller.h"
 
 Controller::Controller() noexcept: 
-    original_{0, 0},  processed_{0,0} , cnn_{} {}
+    original_{0, 0},  processed_{0,0} , cnn_{}, filter_{} {}
 
 bool Controller::loadFile(const std::string& filename) noexcept(false) {
     original_.loadFile(filename);
@@ -14,27 +14,9 @@ bool Controller::saveFile(const std::string& filename) noexcept(false) {
     return true;
 }
 
-void Controller::setFilter(CONVOLUTION_FILTER filter) noexcept
+void Controller::setFilter(int filter) noexcept
 {
-    cnn_.setKernelSize(STANDART_KERNEL_SIZE);
-
-    switch (filter) {
-    case Emboss:
-        cnn_.setEmbossFilter();
-        break;
-    case Sharpen:
-        cnn_.setSharpenFilter();
-        break;
-    case BoxBlur:
-        cnn_.setBoxBlurFilter();
-        break;
-    case GaussianBlur:
-        cnn_.setGaussianBlurFilter();
-        break;
-    case LaplacianFilter:
-        cnn_.setLaplacianFilter();
-        break;
-    }
+    cnn_.setFilter(FilterFactory::create(static_cast<CONVOLUTION_FILTER>(filter - 1)));
 }
 
 void Controller::setKernelSize(int size) noexcept {
@@ -52,11 +34,6 @@ void Controller::processImage() {
     processed_.setData(cnn_.getOutputData());
 }
 
-void Controller::processImage(bool filter) {
-    cnn_.proccesingImage(processed_.data(), processed_.getHeight(), processed_.getWidth(), PrewittFilter);
-
-    processed_.setData(cnn_.getOutputData());
-}
 
 void Controller::clearImage() {
     processed_.setData(original_.data());
@@ -64,23 +41,23 @@ void Controller::clearImage() {
 
 void Controller::makeBWFunction() noexcept {
 
-    cnn_.makeBW(processed_.data(), processed_.getHeight(), processed_.getWidth());
-
-    processed_.setData(cnn_.getOutputData());
+    processed_.setData(
+        filter_.makeBW(processed_.data(), processed_.getHeight(), processed_.getWidth())
+    );
 }
 
 void Controller::keepCertainChannelFunction(const Rgba& color) noexcept {
 
-    cnn_.keepCertainChannel(processed_.data(), processed_.getHeight(), processed_.getWidth(), color);
-
-    processed_.setData(cnn_.getOutputData());
+    processed_.setData(
+        filter_.keepCertainChannel(processed_.data(), processed_.getHeight(), processed_.getWidth(), color)
+    );
 }
 
 void Controller::makeNegativeFunction() noexcept {
 
-    cnn_.makeNegative(processed_.data(), processed_.getHeight(), processed_.getWidth());
-
-    processed_.setData(cnn_.getOutputData());
+    processed_.setData(
+        filter_.makeNegative(processed_.data(), processed_.getHeight(), processed_.getWidth())
+    );
 }
 
 uint32_t Controller::width() const noexcept {
