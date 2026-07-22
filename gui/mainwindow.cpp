@@ -24,6 +24,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     convGroup_ = new QButtonGroup(this);
 
+    connect(convGroup_,
+        &QButtonGroup::idClicked,
+        this,
+        [this](int id)
+        {
+            bool custom = (id == 7);
+
+            ui->tableWidgetKernel->setVisible(custom);
+            ui->spinBoxKernel->setEnabled(custom);
+        });
+
     convGroup_->addButton(ui->radioConvNone, 0);
     convGroup_->addButton(ui->radioEmboss, 1);
     convGroup_->addButton(ui->radioSharpen, 2);
@@ -133,6 +144,7 @@ void MainWindow::kernelChanged(int size)
 {
     controller_.setKernelSize(size);
 
+    ui->tableWidgetKernel->clear();
     ui->tableWidgetKernel->setRowCount(size);
     ui->tableWidgetKernel->setColumnCount(size);
 
@@ -140,13 +152,10 @@ void MainWindow::kernelChanged(int size)
     {
         for (int j = 0; j < size; ++j)
         {
-            if (!ui->tableWidgetKernel->item(i, j))
-            {
-                ui->tableWidgetKernel->setItem(
-                    i,
-                    j,
-                    new QTableWidgetItem("0"));
-            }
+            auto *item = new QTableWidgetItem("0");
+            item->setTextAlignment(Qt::AlignCenter);
+
+            ui->tableWidgetKernel->setItem(i, j, item);
         }
     }
 }
@@ -217,7 +226,7 @@ std::vector<float> MainWindow::readKernel() const
     {
         for (int j = 0; j < size; ++j)
         {
-            auto* item = ui->tableWidgetKernel->item(i, j);
+            auto *item = ui->tableWidgetKernel->item(i, j);
 
             if (item)
                 kernel.push_back(item->text().toFloat());
@@ -282,6 +291,16 @@ void MainWindow::applyFilter()
 
     if (convGroup_->checkedId())
         controller_.setFilter(convGroup_->checkedId());
+    
+    if (convGroup_->checkedId() == 7)
+    {
+        controller_.setKernel(readKernel());
+    }
+    else if (convGroup_->checkedId() != 0)
+    {
+        controller_.setFilter(
+            static_cast<CONVOLUTION_FILTER>(convGroup_->checkedId()));
+    }
 
     controller_.processImage();
     updateProcessedImage();

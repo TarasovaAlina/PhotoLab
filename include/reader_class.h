@@ -27,7 +27,7 @@ public:
 
     using PixelType = Pixel; 
 
-    Bmp(uint32_t width, uint32_t height) noexcept(false);
+    Bmp() = default;
     Bmp(const std::string& filename) noexcept(false);
 
     /**
@@ -134,21 +134,6 @@ private:
     inline static const uint16_t bmpSignature{0x4D42}; ///< BM в 16й системе
     inline static const uint32_t defaultPixelsPerMeter{3780}; ///< рандомное значение 
 };
-
-template<typename Pixel>
-Bmp<Pixel>::Bmp(uint32_t width, uint32_t height) noexcept(false) {
-    // const auto bytesPerRow{ (width * Pixel::bitsPerPixel) / CHAR_BIT };
-    // const auto bytesPerRowWithPadding{ calculateBytesPerRowWithPadding(width) };
-    // const auto dataOffset{ sizeof(BmpHeader) + sizeof(InfoHeader) };
-    // const auto imageSize{ bytesPerRowWithPadding * height };
-    // m_header.fileSize = dataOffset + imageSize;
-    // m_header.dataOffset = dataOffset;
-    m_infoHeader.width = width;
-    m_infoHeader.height = height;
-    // m_infoHeader.imageSize = imageSize;
-    // m_data.resize(imageSize, 0);
-    clear();
-}
 
 template<typename Pixel>
 Bmp<Pixel>::Bmp(const std::string& filename) noexcept(false) {

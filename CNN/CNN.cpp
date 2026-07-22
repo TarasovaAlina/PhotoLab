@@ -165,7 +165,7 @@ std::unique_ptr<IFilterStrategy> FilterFactory::create(CONVOLUTION_FILTER type, 
         return std::make_unique<ConvolutionFilter>(size, std::vector<float>{{ 0.0625f, 0.125f, 0.0625f, 0.125f, 0.25f, 0.125f, 0.0625f, 0.125f, 0.0625f }});
     else if (type == LaplacianFilter) 
         return std::make_unique<ConvolutionFilter>(size, std::vector<float>{{ 0.f, 1.f, 0.f, 1.f, -4.f, 1.f, 0.f, 1.f, 0.f }});
-    else if (type == PrewittFilter) 
+    else if (type == PrewittFilter && size == 3) 
         return std::make_unique<GradientFilter>();
     else return std::make_unique<ConvolutionFilter>();
 }

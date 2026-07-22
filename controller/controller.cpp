@@ -1,7 +1,7 @@
 #include "controller/controller.h"
 
 Controller::Controller() noexcept: 
-    original_{0, 0},  processed_{0,0} , cnn_{}, filter_{} {}
+    original_{},  processed_{} , cnn_{}, filter_{} {}
 
 bool Controller::loadFile(const std::string& filename) noexcept(false) {
     original_.loadFile(filename);
