@@ -3,7 +3,7 @@
 
 #include "CNN/CNN_kernel.h"
 #include "Filters/filters.h"
-#include "reader_class.h"
+#include "Reader/reader_class.h"
 #include <iostream>
 
 TEST(CNNClasses, test_1) {
@@ -28,10 +28,10 @@ TEST(CNNClasses, test_1) {
     test_filer_ = FilterFactory::create(static_cast<CONVOLUTION_FILTER>(7));
     EXPECT_EQ(typeid(*(test_filer_.get())), typeid(ConvolutionFilter));
 
-    CNN cnn_;
+    CNN cnn_, cnn_new_;
     Bmp<Rgba> test_bmp_1{};
 
-    EXPECT_TRUE(test_bmp_1.loadFile("../tests/test_white.bmp"));
+    EXPECT_TRUE(test_bmp_1.loadFile("../../tests/test_white.bmp"));
 
     Bmp<Rgba> test_bmp_2 = test_bmp_1;
 
@@ -51,12 +51,25 @@ TEST(CNNClasses, test_1) {
     EXPECT_EQ((test_bmp_2.data()).size(), (test_bmp_1.data()).size());
     EXPECT_EQ(test_bmp_2.getHeight(), test_bmp_1.getHeight());
     EXPECT_EQ(test_bmp_2.getWidth(), test_bmp_1.getWidth());
+
+    Bmp<Rgba> test_bmp_3{"../../tests/blue-bmp-24-bit.bmp"}, 
+        test_bmp_4{"../../tests/blue-bmp-24-bit.bmp"};
+    std::vector<float> data{ -2.f, -1.f, 0.f, -1.f, 1.f, 1.f, 0.f, 1.f, 2.f };
+
+    cnn_new_.setKernelSize(3);
+    cnn_new_.setKernel(data);
+    cnn_new_.proccesingImage(test_bmp_4.data(), test_bmp_4.getHeight(), test_bmp_4.getWidth());
+
+    cnn_.setFilter(FilterFactory::create(CONVOLUTION_FILTER::Emboss));
+    cnn_.proccesingImage(test_bmp_3.data(), test_bmp_3.getHeight(), test_bmp_3.getWidth());
+
+    EXPECT_EQ(test_bmp_3.data(), test_bmp_4.data());
 }
 
 TEST(FiltersClass, test_2) {
     Filter filter;
     Bmp<Rgba> test_bmp_1{};
-    EXPECT_TRUE(test_bmp_1.loadFile("../tests/test_white.bmp"));
+    EXPECT_TRUE(test_bmp_1.loadFile("../../tests/test_white.bmp"));
 
     const auto& data = test_bmp_1.data();
     int width = test_bmp_1.getWidth();
@@ -77,7 +90,7 @@ TEST(ReaderClasses, test_3) {
 
     Bmp<Rgba> test_bmp_1{}, test_bmp_2{}, test_bmp_3{};;
 
-    EXPECT_TRUE(test_bmp_1.loadFile("../tests/test_white.bmp"));
+    EXPECT_TRUE(test_bmp_1.loadFile("../../tests/test_white.bmp"));
     EXPECT_EQ(test_bmp_1.getWidth(), 150);
     EXPECT_EQ(test_bmp_1.getHeight(), 100);
 
@@ -89,7 +102,7 @@ TEST(ReaderClasses, test_3) {
         }
     }
 
-    EXPECT_TRUE(test_bmp_1.loadFile("../tests/test_fbceb.bmp"));
+    EXPECT_TRUE(test_bmp_1.loadFile("../../tests/test_fbceb.bmp"));
     EXPECT_EQ(test_bmp_1.getWidth(), 150);
     EXPECT_EQ(test_bmp_1.getHeight(), 100);
 
@@ -101,8 +114,8 @@ TEST(ReaderClasses, test_3) {
         }
     }
 
-    EXPECT_TRUE(test_bmp_1.saveFile("../tests/new_image.bmp"));
-    EXPECT_TRUE(test_bmp_2.loadFile("../tests/new_image.bmp"));
+    EXPECT_TRUE(test_bmp_1.saveFile("../../tests/new_image.bmp"));
+    EXPECT_TRUE(test_bmp_2.loadFile("../../tests/new_image.bmp"));
     EXPECT_EQ(test_bmp_2.getWidth(), 150);
     EXPECT_EQ(test_bmp_2.getHeight(), 100);
 
@@ -122,7 +135,7 @@ TEST(ReaderClasses, test_3) {
         }
     }
 
-    EXPECT_TRUE(test_bmp_3.loadFile("../tests/blue-bmp-24-bit.bmp"));
+    EXPECT_TRUE(test_bmp_3.loadFile("../../tests/blue-bmp-24-bit.bmp"));
     EXPECT_EQ(test_bmp_3.getWidth(), 512);
     EXPECT_EQ(test_bmp_3.getHeight(), 512);
 }

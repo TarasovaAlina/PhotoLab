@@ -7,7 +7,7 @@
  * @author Tarasova Alina
  */
 
-#include "reader_class.h"
+#include "Reader/reader_class.h"
 #include "CNN/CNN_kernel.h"
 #include "Filters/filters.h"
 

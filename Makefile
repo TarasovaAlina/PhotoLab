@@ -13,7 +13,7 @@ install:
 	cmake -S . -B $(BUILD_DIR)
 	cmake --build $(BUILD_DIR)
 
-tests:
+test:
 	cmake -S . -B $(GTEST_BUILD_DIR)
 	cmake --build $(GTEST_BUILD_DIR)
 	ctest --test-dir $(GTEST_BUILD_DIR) --output-on-failure
@@ -36,9 +36,7 @@ gcov_report:
 		$(COVERAGE_INFO) \
 		"*/CNN/*.cpp" \
 		"*/Filters/*.cpp" \
-		"*/include/CNN/*.h" \
-		"*/include/Filters/*.h" \
-		"*/include/reader_class.h" \
+		"*/include/Reader/reader_class.h" \
 		--output-file $(FILTERED_INFO)
 
 	genhtml \

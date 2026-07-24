@@ -37,6 +37,8 @@ struct RGBA_pattern {
 
     RGBA_pattern& operator*=(float num);
 
+    bool operator==(const RGBA_pattern& temp) const;
+
     /**
      * @brief устанавливает значение цветового канала в необходимом диапозоне (0-255)
      * @param val значение цветового канала
@@ -112,6 +114,17 @@ T RGBA_pattern<T>::setValue(float val) const {
     if (val > 255.0f) return static_cast<T>(255);
     if (val < 0.0f) return static_cast<T>(0);
     return static_cast<T>(val);
+}
+
+template<typename T>
+bool RGBA_pattern<T>::operator==(const RGBA_pattern& temp) const {
+    bool res{true};
+    if (blue != temp.blue ||
+        green != temp.green ||
+        red != temp.red ||
+        alpha != temp.alpha) res = false;
+
+    return res;
 }
 
 using Rgba = RGBA_pattern<uint8_t>;

@@ -156,7 +156,7 @@ bool Bmp<Pixel>::loadFile(const std::string& filename) noexcept(false) {
         const auto imageSize = calculateBytesPerRowWithPadding(m_infoHeader.width) * m_infoHeader.height;
         m_infoHeader.imageSize = imageSize;
 
-        m_data.resize(m_infoHeader.imageSize);
+        m_data.resize(m_infoHeader.width * m_infoHeader.height);
 
         setBitFormat(file);
 
@@ -265,6 +265,7 @@ void Bmp<Pixel>::setBitFormat(std::ifstream& file) noexcept(false) {
             m_data[j].blue = file_data[i];
             m_data[j].green = file_data[i + 1];
             m_data[j].red = file_data[i + 2];
+            m_data[j].alpha = 255;
             j++;
         }
         
